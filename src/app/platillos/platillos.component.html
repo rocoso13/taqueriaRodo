@@ -1,0 +1,48 @@
+<!-- <div class="card bg-white text-primary">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center">Platillos</h1>
+        </div>
+    </div>
+</div> -->
+<div class="card">
+  <div class="card-header">
+    <h1 class="text-center">Platillos</h1>
+  </div>
+  <div class="card-body">
+    <div class="row">
+        <div class="container mt-4">
+            <form [formGroup]="platilloForm" (ngSubmit)="guardarPlatillo()">
+              <div class="form-group">
+                <label for="nombre">Nombre del platillo:</label>
+                <input type="text" class="form-control" id="nombre" formControlName="nombre" required>
+                <div *ngIf="platilloForm.value.nombre.invalid && platilloForm.value.nombre.touched" class="text-danger">
+                  El nombre del platillo es requerido.
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="precio">Precio:</label>
+                <input type="number" class="form-control" id="precio" formControlName="precio" required>
+                <div *ngIf="platilloForm.value.precio.invalid && platilloForm.value.precio.touched" class="text-danger">
+                  El precio del platillo es requerido.
+                </div>
+              </div>
+      
+              <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea class="form-control" id="descripcion" formControlName="descripcion" required></textarea>
+                <div *ngIf="platilloForm.value.descripcion.invalid" class="text-danger">
+                  La descripción del platillo es requerida.
+                </div>
+              </div>
+      
+              <!-- Agrega los campos restantes según tus necesidades (carreta e imagen) -->
+      
+              <button type="submit" [disabled]="platilloForm.invalid" class="btn btn-primary">Guardar Platillo</button>
+            </form>
+          </div>
+    </div>
+  </div>
+  <div class="card-footer">Pie de la tarjeta</div>
+</div>

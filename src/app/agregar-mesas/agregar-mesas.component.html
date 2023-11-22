@@ -1,0 +1,58 @@
+<p-button (click)="showDialog()" icon="pi pi-external-link" label="Show"></p-button>
+<p-dialog header="Header" [(visible)]="visible" [maximizable]="true" >
+    <form [formGroup]="mesaForm">
+        <div class="form-group">
+          <label for="numero">Número de Mesa</label>
+          <input type="number" class="form-control" id="numero" formControlName="numero" />
+        </div>
+        <div class="form-group">
+          <label for="estatus">Estatus</label>
+          <input type="number" class="form-control" id="estatus" formControlName="estatus" />
+        </div>
+        <div class="form-group">
+          <label for="color">Color</label>
+          <input type="text" class="form-control" id="color" formControlName="color" />
+        </div>
+        <div class="form-group">
+          <label for="habilitada">Habilitada</label>
+          <input type="number" class="form-control" id="habilitada" formControlName="habilitada" />
+        </div>
+        <button type="button" class="btn btn-primary" (click)="agregarMesa()">Agregar Mesa</button>
+      </form>
+</p-dialog>
+<p-messages [(value)]="messages" [enableService]="false" [closable]="false"></p-messages>
+<div class="container mt-4">
+    <!-- ... Resto del contenido ... -->
+    <div class="row mt-3">
+      <div class="col">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Estatus</th>
+              <th>Color</th>
+              <th>Habilitada</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let mesa of mesas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage); let i = index">
+              <td>{{ mesa.numeroMesa }}</td>
+              <td>{{ mesa.estatus }}</td>
+              <td>{{ mesa.habilitada }}</td>
+              <td>
+                <button type="button" class="btn btn-info" data-toggle="modal" (click)="editarMesa(i)">
+                  Editar
+                </button>
+                <button type="button" class="btn btn-danger" (click)="eliminarMesa(i)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="120" [rowsPerPageOptions]="[10, 20, 30]"></p-paginator>
+      </div>
+    </div>
+  </div>
+  

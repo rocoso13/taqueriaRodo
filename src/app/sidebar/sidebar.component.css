@@ -1,0 +1,47 @@
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    height: 100%;
+    transition: all 0.3s;
+    position: fixed;
+  }
+  
+  .active {
+    margin-left: -250px;
+  }
+  
+  .sidebar-header {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .sidebar-header h3 {
+    color: white;
+  }
+  
+  .list-unstyled {
+    padding: 20px;
+    padding-top: 0;
+  }
+  
+  .list-unstyled li a {
+    color: white;
+    padding: 10px 15px;
+    display: block;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  
+  .list-unstyled li a:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .toggle-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 1.5rem;
+  }
+  
