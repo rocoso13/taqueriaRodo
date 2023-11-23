@@ -1,43 +1,16 @@
-name: Build and deploy
-
-on:
+name: Deploy to Firebase Hosting on merge
+'on':
   push:
-    branches: [ main ]
-    
-  # Run workflow manually
-  workflow_dispatch:
-
+    branches:
+      - main
 jobs:
-  build:
-    name: Build
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@main
-      - name: Install dependencies
-        run: npm i --force
-      - name: Build dependencies
-        run: npm run build
-      - name: Archive production artifact
-        uses: actions/upload-artifact@main
+      - uses: actions/checkout@v3
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          name: dist
-          path: dist/taqueria-rodo
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@main
-      - name: Download artifact
-        uses: actions/download-artifact@main
-        with:
-          name: dist
-          path: dist
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting
-        env: 
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_NEGOCIOKEVIN_52BDA }}'
+          channelId: live
+          projectId: negociokevin-52bda
