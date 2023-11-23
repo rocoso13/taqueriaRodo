@@ -33,7 +33,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@main
         with:
-          name: dist/taqueria-rodo
+          name: dist
           path: dist/taqueria-rodo
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
