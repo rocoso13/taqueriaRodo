@@ -13,6 +13,6 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NEGOCIOKEVIN_52BDA }}
+          firebaseServiceAccount: 1//05mujg2LLBpx5CgYIARAAGAUSNwF-L9IrSHh6Hnp8KDAvanHh5-aUnjlcRwmg0qaEEfFh1X8fPz4oHJCbdTzwulsdoHiTlip_ZgE
           channelId: live
           projectId: negociokevin-52bda
