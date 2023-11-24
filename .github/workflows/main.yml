@@ -1,18 +1,30 @@
-name: Deploy to Firebase Hosting on merge
+name: Deploy to Firebase Hosting
+
 on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - run: npm ci && npm run build
-      - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: 1//05mujg2LLBpx5CgYIARAAGAUSNwF-L9IrSHh6Hnp8KDAvanHh5-aUnjlcRwmg0qaEEfFh1X8fPz4oHJCbdTzwulsdoHiTlip_ZgE
-          channelId: live
-          projectId: negociokevin-52bda
+          node-version: 14
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Angular App
+        run: npm run build -- --prod
+
+      - name: Deploy to Firebase Hosting
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --token ${{ secrets.FIREBASE_TOKEN }} --project ${{  negociokevin-52bda }}
