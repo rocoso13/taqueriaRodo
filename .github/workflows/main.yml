@@ -12,6 +12,6 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'
+          firebaseServiceAccount: '1//0fWL7SJ-lH89DCgYIARAAGA8SNwF-L9Irk2CPv5M5vd0lUEVvfmfCo587XTxQKoLvYDAhlGhEcDIbEGquxXCzB6CD0Qqna9PLKMA'
           channelId: live
-          projectId: FIREBASE_PROJECT_ID
+          projectId: 'taqueriaRodo'
