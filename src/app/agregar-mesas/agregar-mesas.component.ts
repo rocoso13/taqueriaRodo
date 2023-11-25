@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Mesa } from './models/agregarMesa';
-import { MesasService } from './agregarMesas.service/agregarMesas.service';
 import { Message } from 'primeng/api';
 
 import {
@@ -19,7 +18,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../DB Fire Base/conexion-FireBase';
-
+import { MesasService } from './agregarMesas.service/agregarMesas.service';
 
 interface PageEvent {
   first: number;
@@ -36,7 +35,10 @@ interface PageEvent {
 export class AgregarMesasComponent {
   mesas: any[] = [];
   messages: Message[] = [];
-  ids : string[] = [];
+  public esEdicion : boolean = false;
+  ids: string[] = [];
+  public mesaEditar : [] = []
+  public idMesaEditar : any;
 
   agarrarMesas = [];
   mesaClass = new Mesa();
@@ -44,114 +46,172 @@ export class AgregarMesasComponent {
 
   first: number = 0;
 
-    rows: number = 10;
+  rows: number = 10;
 
   // Propiedades para la paginación
-  totalItems: number =0;
-  itemsPerPage: number = 5; // ajusta según tus necesidades
+  totalItems: number = 0;
+  itemsPerPage: number = 10; // ajusta según tus necesidades
   currentPage: number = 1;
-
-  
 
   constructor(private mesasService: MesasService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    
     this.obtenerMesas();
     this.totalItems = this.mesas.length;
 
     this.mesaForm = this.fb.group({
       numero: [null, [Validators.required, Validators.min(1)]],
       estatus: [null, Validators.required],
-      color: [null, Validators.required],
       habilitada: [null, Validators.required],
     });
   }
 
-//   {
-//     "habilitada": 2,
-//     "numeroMesa": 2,
-//     "estatus": 2
-// }
-
- async obtenerMesas(){
-    // await this.mesasService.obtenerMesas().then((data) => {
-    //   console.log('Resultado exitoso:', data);
-    //   this.ids = data.ids;
-    //   data.mesas.forEach(mesa => {
-    //     this.mesaClass = new Mesa();
-    //     this.mesaClass.numero = mesa['numeroMesa'];
-    //     this.mesaClass.habilitada = mesa['habilitada'];
-    //     this.mesaClass.estatus = mesa['estatus'];
-    //     this.mesas.push(this.mesaClass);
-    //   })
-    //   console.log('siuu');
-    //   console.log(this.mesas);
-    // })
-    // .catch((error) => {
-    //   console.error('Error:', error);
-    // })
-    // return []
-
+  async obtenerMesas() {
     const q = query(collection(db, 'mesas'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       console.log(snapshot.docs);
       this.mesas = [];
-       this.ids = [];
+      this.ids = [];
       snapshot.docs.forEach((mesa) => {
-       
         this.mesas.push(mesa.data());
         this.ids.push(mesa.id);
-        
       });
     });
   }
 
-  agregarMesa(): void {
-    if (this.mesaForm.valid) {
+  agregarMesa() {
+    console.log("entro a mesassiuu")
+    console.log(this.mesaForm.value.numero);
+    console.log(this.mesaForm.value);
       const nuevaMesa: Mesa = this.mesaForm.value;
+      console.log(this.esEdicion);
+      this.mesasService.agregarMesa(this.mesaForm.value, this.esEdicion, this.idMesaEditar).then((resultado) => {
+        this.messages = [
+          {
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Message Content',
+          },
+        ];
+        this.limpiarMensajes()
+      })
+      .catch((error) => {
+        console.error('Error al obtener datos:', error);
+        this.messages = [
+          {
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Closable Message Content',
+          },
+        ];
+        this.limpiarMensajes()
+      });
       this.mesaForm.reset();
+      this.idMesaEditar = ''
+      this.idMesaEditar = false
+
       // Actualizar la paginación después de agregar una nueva mesa
       this.totalItems = this.mesas.length;
       this.currentPage = Math.ceil(this.totalItems / this.itemsPerPage);
-    }
+    
   }
 
-  editarMesa(i : any){
-    console.log(i)
-    console.log(this.ids[i])
+  editarMesa(mesa: any, id: any) {
+    this.mesaForm = this.fb.group({
+      numero: [mesa.numeroMesa, [Validators.required, Validators.min(1)]],
+      estatus: [mesa.estatus, Validators.required],
+      habilitada: [mesa.habilitada, Validators.required],
+    });
+    this.idMesaEditar = id;
+
+    this.mesaForm.value
+
+
+    console.log('esta mesa se va a editar',mesa);
+
+
+    // this.mesasService.editarMesa(this.mesaForm.value, id).then((resultado) => {
+    //   this.messages = [
+    //     {
+    //       severity: 'success',
+    //       summary: 'Success',
+    //       detail: 'Message Content',
+    //     },
+    //   ];
+    //   this.limpiarMensajes()
+    // })
+    // .catch((error) => {
+    //   console.error('Error al obtener datos:', error);
+    //   this.messages = [
+    //     {
+    //       severity: 'error',
+    //       summary: 'Error',
+    //       detail: 'Closable Message Content',
+    //     },
+    //   ];
+    //   this.limpiarMensajes()
+    // });
+   
+    
   }
 
   eliminarMesa(index: number): void {
-
-    console.log(index)
-    console.log(this.ids[index])
+    console.log(index);
+    console.log(this.ids[index]);
     // Actualizar la paginación después de eliminar una mesa
-    this.mesasService.eliminarMesa('mesas', this.ids[index]).then((resultado) => {
-      this.messages = [{ severity: 'success', summary: 'Success', detail: 'Message Content' }];
-      this.mesas.splice(index, 1);
-
-    }).catch((error) => {
-      console.error("Error al obtener datos:", error);
-      this.messages  = [{ severity: 'error', summary: 'Error', detail: 'Closable Message Content' }];
-    });
+    this.mesasService
+      .eliminarMesa('mesas', this.ids[index])
+      .then((resultado) => {
+        this.messages = [
+          {
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Se elimino la mesa correctamente',
+          },
+        ];
+      })
+      .catch((error) => {
+        console.error('Error al obtener datos:', error);
+        this.messages = [
+          {
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Closable Message Content',
+          },
+        ];
+      });
     this.totalItems = this.mesas.length;
 
     this.currentPage = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
-  onPageChange(event : any): void {
+  onPageChange(event: any): void {
     this.currentPage = event.page + 1;
   }
 
   visible: boolean = false;
 
-  showDialog() {
+  showDialog(i : any) {
+    i == null ? this.esEdicion = false : this.esEdicion = true;
+    this.ids[i];
+    this.mesas[i];
+    if (this.mesas[i] != undefined) {
+      this.editarMesa(this.mesas[i], this.ids[i]);
+    }
+    
+
+
     this.visible = true;
   }
 
   hideDialog() {
     this.visible = false;
   }
-}
 
+  limpiarMensajes() {
+    setTimeout(() => {
+      this.messages = []
+    }, 300);
+  }
+
+}

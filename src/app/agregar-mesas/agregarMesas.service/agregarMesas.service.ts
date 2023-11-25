@@ -14,6 +14,7 @@ import {
   onSnapshot,
   query,
   where,
+  addDoc,
 } from 'firebase/firestore';
 import { Mesa } from '../models/agregarMesa';
 import { db } from 'src/app/DB Fire Base/conexion-FireBase';
@@ -26,35 +27,39 @@ export class MesasService {
     // Agrega más mesas según sea necesario
   ];
 
-  async obtenerMesas() {
-    console.log('hola');
-    let mesas: DocumentData[] = [];
-    let mesass: any[] = [];
-    let ids: string[] = [];
-
-    
-    
-
-    // const querySnapshot = await getDocs(collection(db, 'mesas'));
-    // querySnapshot.forEach((doc) => {
-    //   // doc.data() is never undefined for query doc snapshots
-    //   console.log(doc.id, ' => ', doc.data());
-    //   mesas.push(doc.data());
-    //   ids.push(doc.id);
-    // });
-
-    // console.log('hola2')
-
-    // if (docSnap.exists()) {
-    //   console.log("Document data:", docSnap.data());
-    // } else {
-    //   console.log("No se encontro el documento!");
-    // }
-    console.log(mesas);
-    return { mesas, ids };
-  }
-
   async eliminarMesa(collection: string, idDoc: string) {
     await deleteDoc(doc(db, collection, idDoc));
+    
+  }
+
+  async agregarMesa(mesa: any, esEdicion : boolean, id : any){
+    console.log(mesa);
+    if (esEdicion) {
+      await setDoc(doc(db, "mesas", id), {
+        estatus : mesa.estatus,
+          habilitada : mesa.habilitada,
+          numeroMesa : mesa.numero
+      });
+    } else{
+      try {
+        await addDoc(collection(db, "mesas"), {
+          estatus : mesa.estatus,
+          habilitada : mesa.habilitada,
+          numeroMesa : mesa.numero
+        });
+        console.log('Documento agregado con éxito');
+      } catch (error) {
+        console.error('Error al agregar el documento: ', error);
+      }
+    }
+    
+  }
+
+  async editarMesa(mesa: any, id: any){
+    await setDoc(doc(db, "mesas", id), {
+      estatus : mesa.estatus,
+        habilitada : mesa.habilitada,
+        numeroMesa : mesa.numero
+    });
   }
 }

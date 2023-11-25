@@ -10,7 +10,6 @@ import { HomeComponent } from './home/home.component';
 import { ProductComponent } from './product/product.component';
 import { CustomerComponent } from './customer/customer.component';
 import { PlatillosComponent } from './platillos/platillos.component';
-import { AgregarMesasComponent } from './agregar-mesas/agregar-mesas.component';
 import { MesasComponent } from './mesas/mesas.component';
 import { TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
@@ -19,6 +18,7 @@ import { ButtonModule } from 'primeng/button';
 import {AnimateModule} from 'primeng/animate';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MessagesModule } from 'primeng/messages';
+import { AgregarMesasComponent } from './agregar-mesas/agregar-mesas.component';
 
 @NgModule({
   declarations: [
