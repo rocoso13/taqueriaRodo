@@ -1,48 +1,70 @@
-<!-- <div class="card bg-white text-primary">
-    <div class="row">
-        <div class="col-md-12">
-            <h1 class="text-center">Platillos</h1>
-        </div>
+<p-button (click)="showDialog(null)" icon="pi pi-external-link" label="Show"></p-button>
+<p-dialog header="Header" [(visible)]="visible" [maximizable]="true" >
+  <form [formGroup]="platilloForm" (ngSubmit)="agregarPlatillo()">
+    <div class="form-group">
+      <label for="nombre">Nombre del platillo:</label>
+      <input type="text" class="form-control" id="nombre" formControlName="nombre" required>
+      
     </div>
-</div> -->
-<div class="card">
-  <div class="card-header">
-    <h1 class="text-center">Platillos</h1>
-  </div>
-  <div class="card-body">
-    <div class="row">
-        <div class="container mt-4">
-            <form [formGroup]="platilloForm" (ngSubmit)="guardarPlatillo()">
-              <div class="form-group">
-                <label for="nombre">Nombre del platillo:</label>
-                <input type="text" class="form-control" id="nombre" formControlName="nombre" required>
-                <div *ngIf="platilloForm.value.nombre.invalid && platilloForm.value.nombre.touched" class="text-danger">
-                  El nombre del platillo es requerido.
-                </div>
-              </div>
-              
-              <div class="form-group">
-                <label for="precio">Precio:</label>
-                <input type="number" class="form-control" id="precio" formControlName="precio" required>
-                <div *ngIf="platilloForm.value.precio.invalid && platilloForm.value.precio.touched" class="text-danger">
-                  El precio del platillo es requerido.
-                </div>
-              </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción:</label>
+      <textarea class="form-control" id="descripcion" formControlName="descripcion" required></textarea>
       
-              <div class="form-group">
-                <label for="descripcion">Descripción:</label>
-                <textarea class="form-control" id="descripcion" formControlName="descripcion" required></textarea>
-                <div *ngIf="platilloForm.value.descripcion.invalid" class="text-danger">
-                  La descripción del platillo es requerida.
-                </div>
-              </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="precio">Precio:</label>
+      <input type="number" class="form-control" id="precio" formControlName="precio" required>
       
-              <!-- Agrega los campos restantes según tus necesidades (carreta e imagen) -->
+    </div>
+
+    <div class="form-group">
+      <label for="precio">Carreta:</label>
+      <input type="number" class="form-control" id="precio" formControlName="carreta" required>
       
-              <button type="submit" [disabled]="platilloForm.invalid" class="btn btn-primary">Guardar Platillo</button>
-            </form>
-          </div>
+    </div>
+
+    
+
+    <!-- Agrega los campos restantes según tus necesidades (carreta e imagen) -->
+
+    <button type="submit" [disabled]="platilloForm.invalid" class="btn btn-primary">Guardar Platillo</button>
+  </form>
+</p-dialog>
+<p-messages [(value)]="messages" [enableService]="false" [closable]="false"></p-messages>
+<div class="container mt-4">
+    <!-- ... Resto del contenido ... -->
+    <div class="row mt-3">
+      <div class="col">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Descripcion</th>
+              <th>Precio</th>
+              <th>Carreta</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let platillo of platillos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage); let i = index">
+              <td>{{ platillo.nombre }}</td>
+              <td>{{ platillo.descripcion }}</td>
+              <td>{{ platillo.precio }}</td>
+              <td>{{ platillo.carreta }}</td>
+              <td>
+                <button type="button" class="btn btn-info" data-toggle="modal" (click)="showDialog(i)">
+                  Editar
+                </button>
+                <button type="button" class="btn btn-danger" (click)="eliminarPlatillo(i)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="120" [rowsPerPageOptions]="[10, 20, 30]"></p-paginator>
+      </div>
     </div>
   </div>
-  <div class="card-footer">Pie de la tarjeta</div>
-</div>
