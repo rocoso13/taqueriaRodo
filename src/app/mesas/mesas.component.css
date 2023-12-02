@@ -1,0 +1,62 @@
+.mesa-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    background-color: #007bff; /* Marrón para simular color de madera */
+    color: #fff; /* Texto en color blanco */
+    border: 2px solid #007bff; /* Borde de color más oscuro */
+    border-radius: 10px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: background-color 0.3s;
+  }
+  
+  .mesa-btn:hover {
+    background-color: #007bff; /* Cambia el color al pasar el ratón */
+  }
+  
+  /* Estilos y animaciones para el modal de PrimeNG */
+  :host ::ng-deep .ui-dialog {
+    max-width: 100%;
+  }
+  
+  :host ::ng-deep .ui-dialog-content {
+    /* Estilos del contenido del modal */
+    text-align: center;
+  }
+  
+  :host ::ng-deep .ui-dialog-titlebar {
+    /* Estilos de la barra de título del modal */
+    background-color: #007bff; /* Marrón para simular color de madera */
+    color: #fff; /* Texto en color blanco */
+    border: none;
+  }
+  
+  :host ::ng-deep .ui-dialog-title {
+    font-size: 1.5rem;
+  }
+  
+  :host ::ng-deep .ui-dialog-titlebar-icon {
+    display: none; /* Ocultar el icono de la barra de título si es necesario */
+  }
+  
+  /* Animación de entrada del modal */
+  :host ::ng-deep .ui-dialog {
+    animation: fade-in 0.5s ease-in-out;
+  }
+  
+  /* ... Otras reglas de estilo ... */
+  
+  /* Animación de entrada del modal */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
