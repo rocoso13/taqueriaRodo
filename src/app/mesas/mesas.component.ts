@@ -33,6 +33,8 @@ export class MesasComponent {
 
   public numeroMesa: string = '';
   public platillos : Platillo[] = [];
+  public platillosComandas : Platillo[] = [];
+  public cantidadDePlatillos : number = 1
 
   first: number = 0;
 
@@ -104,6 +106,25 @@ export class MesasComponent {
     this.platillos = await this.mesasService.obtenerPlatillos();
     console.log('platillos siuu');
     console.log(this.platillos)
+  }
+
+  agregarPlatilloComanda(platillo : Platillo){
+    console.log(platillo)
+    this.platillosComandas.push(platillo);
+  }
+
+  incremetarPlatillo(i : any){
+    // this.cantidadDePlatillos++
+    this.platillosComandas[i].cantidad++
+  }
+
+  decrementarPlatillo(i : any){
+    // this.cantidadDePlatillos--
+    this.platillosComandas[i].cantidad--
+  }
+
+  eliminarPlatilloComanda(i : any){
+    this.platillosComandas.splice(i, 1);
   }
 
   

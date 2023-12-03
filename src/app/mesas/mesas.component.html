@@ -2,77 +2,112 @@
   <div class="card-body">
     <h3 class="text-center">Apartado de Mesas</h3>
     <div class="row mt-5">
-      <div class="col-md-3 mb-5" *ngFor="let mesa of mesas">
+      <div class="col-3 mb-5" *ngFor="let mesa of mesas">
         <button class="mesa-btn" (click)="showModal(mesa)">
-            <i class="fas fa-table icono-mesa"></i> Mesa : {{mesa.numeroMesa}}
-          </button>
+          <i class="fas fa-table icono-mesa"></i> Mesa : {{ mesa.numeroMesa }}
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 
-
-<p-dialog header="Numero de mesa {{numeroMesa}}" [(visible)]="displayModal" [style]="{width: '50%'}"
-          [modal]="true" [draggable]="false" [resizable]="false" [closable]="true" [dismissableMask]="true"
-          >
-          <form [formGroup]="comandaForm">
-            <!-- <div class="form-group">
+<!-- modal de comandas -->
+<p-dialog
+  header="Numero de mesa {{ numeroMesa }}"
+  [(visible)]="displayModal"
+  [style]="{ width: '70%' }"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+>
+  <h1 class="text-center">Comanda</h1>
+  <form [formGroup]="comandaForm">
+    <!-- <div class="form-group">
                 <label for="precio">Nombre:</label>
                 <input type="number" class="form-control" id="precio" formControlName="precio" required>
               </div> -->
-              <table class="table mt-4">
-                <thead>
-                    <tr>
-                        <th scope="col">Platillo</th>
-                        <th scope="col">Precio</th>
-                        <th scope="col">Cantidad</th>
-                        
-                    </tr>
-                </thead>
-                    <tbody  *ngFor="let platillo of platillos">
-                        <!-- <tr>
-                            <td>{{platillo.nombre}}</td>
-                            <td>{{platillo.precio}}</td>
-                            <td>25</td>
-                        </tr> -->
-                        <!-- Puedes agregar más filas según sea necesario -->
-                    </tbody>
-               
-            </table>
-            <input type="button" value="Platillos" class="form-control" (click)="showModalPlatillos()">
-            <input type="button" value="Enviar Comanda"  (click)="enviarComanda()">
-          </form>
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th scope="col">Platillo</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col">Eliminar</th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let platilloComanda of platillosComandas; let i = index">
+        <tr>
+          <td>{{ platilloComanda.nombre }}</td>
+          <td>{{ platilloComanda.precio }}</td>
+          <td><button class="btn btn-danger fa-solid fa-minus" (click)="decrementarPlatillo(i)"></button>{{platilloComanda.cantidad}}<button class="btn btn-success fa-solid fa-plus" (click)="incremetarPlatillo(i)"></button></td>
+          <td><button class="btn btn-danger fa-solid fa-trash" (click)="eliminarPlatilloComanda(i)"></button></td>
+        </tr>
+      </tbody>
+    </table>
+    <input
+      type="button"
+      value="Platillos"
+      class="form-control btn btn-primary"
+      (click)="showModalPlatillos()"
+    />
+    <label for="descripcion">Descripcion</label>
+    <textarea class="form-control"></textarea>
+    
+    <label for="acciones">Selecciona una acción:</label>
+    <select class="form-control mb-5" id="acciones" name="acciones">
+      <option value="enviar">Enviar</option>
+      <option value="completar">Completar</option>
+      <option value="cancelar">Cancelar</option>
+    </select>
+    <input type="button" class="form-control btn btn-success" value="Enviar Comanda" (click)="enviarComanda()" />
+  </form>
 </p-dialog>
 
-<p-dialog header="Numero de mesa {{numeroMesa}}" [(visible)]="displayModalComanda" [style]="{width: '50%'}"
-          [modal]="true"  [resizable]="false" [closable]="true" [dismissableMask]="true"
-          >
-          <h1 class="text-center">Listado de platillos</h1>
-          <form [formGroup]="comandaForm">
-            <!-- <div class="form-group">
+
+
+
+
+
+<!-- modal de listado de platillos -->
+<p-dialog
+  header="Numero de mesa {{ numeroMesa }}"
+  [(visible)]="displayModalComanda"
+  [style]="{ width: '40%' }"
+  [modal]="true"
+  [resizable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+>
+  <h1 class="text-center">Listado de platillos</h1>
+  
+    <!-- <div class="form-group">
                 <label for="precio">Nombre:</label>
                 <input type="number" class="form-control" id="precio" formControlName="precio" required>
               </div> -->
-              <table class="table mt-4">
-                <thead>
-                    <tr>
-                        <th scope="col">Platillo</th>
-                        <th scope="col">Precio</th>
-                        <th scope="col">Agregar</th>
-                        
-                    </tr>
-                </thead>
-                    <tbody *ngFor="let platillo of platillos" >
-                        <tr>
-                            <td>{{platillo.nombre}}</td>
-                            <td>{{platillo.precio}}</td>
-                            <td><button class="btn btn-primary">siuu</button></td>
-                        </tr>
-                        <!-- Puedes agregar más filas según sea necesario -->
-                    </tbody>
-               
-            </table>
-          </form>
-        </p-dialog>
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th scope="col">Platillo</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Agregar</th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let platillo of platillos">
+        <tr>
+          <td>{{ platillo.nombre }}</td>
+          <td>{{ platillo.precio }}</td>
+          <td>
+            <button
+              class="btn btn-success fa-solid fa-plus btn-lg"
+              (click)="agregarPlatilloComanda(platillo)"
+            ></button>
+          </td>
+        </tr>
+        <!-- Puedes agregar más filas según sea necesario -->
+      </tbody>
+    </table>
 
+</p-dialog>
