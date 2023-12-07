@@ -34,7 +34,7 @@ export class MesasComponent {
 
   public numeroMesa: string = '';
   public platillos: Platillo[] = [];
-  public platillosComandas: Platillo[] = [];
+  public platillosComandas : Platillo[] = [];
   public cantidadDePlatillos: number = 1;
   public idMesaActual : any;
   public mesaModalActual : any;
@@ -75,25 +75,32 @@ export class MesasComponent {
 
   //funcion donde se abre el modal y te muestra si esa mesa tiene una comanda activa
   async showModal(mesa: any, idMesa: any) {
+    this.comandaForm.reset();
     this.mesaModalActual = mesa;
     this.platillosComandas = [];
-    let comandaActual = [];
+    let comandaActual : Promise<any[]>;
     console.log('se volvio a ejecutar este metodo');
     console.log(mesa)
     
     if (mesa.estatusComanda === 'enviar') {
       //consultarPlatillos por comanda y si no existe la comanda activa se incializa como vacio los platillos
       console.log('esto trae platillosComanda', this.platillosComandas)
-      this.platillosComandas.length === 0 ? this.platillosComandas = await this.mesasService.obtenerPlatillosComanda(
+      this.platillosComandas.length === 0 ? this.mesasService.obtenerPlatillosComanda(
         mesa.idComandaActual
-      ) : [];
+      ).then(respuesta => {
+        this.platillosComandas = respuesta;
+      }) : [];
 
-      comandaActual = await this.mesasService.obtenerComanda(mesa.idComandaActual)
+      comandaActual = this.mesasService.obtenerComanda(mesa.idComandaActual)
 
-      this.comandaForm = this.fb.group({
-        descripcion: [comandaActual[0], Validators.required],
-        estatus: [comandaActual[1], Validators.required]
-      });
+      comandaActual.then((respuesta) => {
+        this.comandaForm = this.fb.group({
+          descripcion: [respuesta[0], Validators.required],
+          estatus: [respuesta[1], Validators.required]
+        });
+      })
+
+      
     }
 
     this.numeroMesa = mesa.numeroMesa;
