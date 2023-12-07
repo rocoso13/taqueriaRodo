@@ -15,6 +15,7 @@ import { db } from '../DB Fire Base/conexion-FireBase';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MesasService } from './mesas.service/mesas.service';
 import { Platillo } from '../platillos/models/Platillo';
+import { Message } from 'primeng/api';
 
 interface Product {
   name: string;
@@ -24,21 +25,24 @@ interface Product {
 @Component({
   selector: 'app-mesas',
   templateUrl: './mesas.component.html',
-  styleUrls: ['./mesas.component.css']
+  styleUrls: ['./mesas.component.css'],
 })
 export class MesasComponent {
   mesas: any[] = [];
-  ids : any[] = [];
+  ids: any[] = [];
   comandaForm!: FormGroup;
 
   public numeroMesa: string = '';
-  public platillos : Platillo[] = [];
-  public platillosComandas : Platillo[] = [];
-  public cantidadDePlatillos : number = 1
-
+  public platillos: Platillo[] = [];
+  public platillosComandas: Platillo[] = [];
+  public cantidadDePlatillos: number = 1;
+  public idMesaActual : any;
+  public mesaModalActual : any;
   first: number = 0;
 
   rows: number = 10;
+
+  messages: Message[] = [];
 
   // Propiedades para la paginación
   totalItems: number = 0;
@@ -51,39 +55,53 @@ export class MesasComponent {
       products: this.fb.array([
         { name: 'Producto 1', quantity: 2 },
         { name: 'Producto 2', quantity: 1 },
-      ])
+      ]),
     });
   }
 
   displayModal: boolean = false;
   displayModalComanda: boolean = false;
-  showModal(mesa : any) {
-  //   {
-  //     "habilitada": 1,
-  //     "numeroMesa": 16,
-  //     "estatus": 1
-  // }
-  this.numeroMesa = mesa.numeroMesa;
+
+  ngOnInit(): void {
+    //esta funcion obtiene las mesas en tiempo real
+    this.obtenerMesas();
+    this.totalItems = this.mesas.length;
+    this.comandaForm = this.fb.group({
+      descripcion: ['', Validators.required],
+      estatus: ['', Validators.required],
+      mesa: ['', Validators.required],
+    });
+  }
+
+  //funcion donde se abre el modal y te muestra si esa mesa tiene una comanda activa
+  async showModal(mesa: any, idMesa: any) {
+    this.mesaModalActual = mesa;
+    this.platillosComandas = [];
+    let comandaActual = [];
+    console.log('se volvio a ejecutar este metodo');
     console.log(mesa)
+    
+    if (mesa.estatusComanda === 'enviar') {
+      //consultarPlatillos por comanda y si no existe la comanda activa se incializa como vacio los platillos
+      console.log('esto trae platillosComanda', this.platillosComandas)
+      this.platillosComandas.length === 0 ? this.platillosComandas = await this.mesasService.obtenerPlatillosComanda(
+        mesa.idComandaActual
+      ) : [];
+
+      comandaActual = await this.mesasService.obtenerComanda(mesa.idComandaActual)
+
+      this.comandaForm = this.fb.group({
+        descripcion: [comandaActual[0], Validators.required],
+        estatus: [comandaActual[1], Validators.required]
+      });
+    }
+
+    this.numeroMesa = mesa.numeroMesa;
+    this.idMesaActual = this.ids[idMesa];
     this.displayModal = true;
   }
 
-  ngOnInit(): void {
-    this.obtenerMesas();
-    this.totalItems = this.mesas.length;
-
-
-    this.comandaForm = this.fb.group({
-      numero: [null, [Validators.required, Validators.min(1)]],
-      estatus: [null, Validators.required],
-      habilitada: [null, Validators.required],
-    });
-    this.productsForm = this.fb.group({
-      products: this.fb.array([])
-    });
-  
-  }
-
+  //esta funcion obtiene las mesas en tiempo real
   async obtenerMesas() {
     const q = query(collection(db, 'mesas'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -97,35 +115,133 @@ export class MesasComponent {
     });
   }
 
-  enviarComanda(){
-
-  }
-
-  async showModalPlatillos(){
+  async showModalPlatillos() {
     this.displayModalComanda = true;
     this.platillos = await this.mesasService.obtenerPlatillos();
     console.log('platillos siuu');
-    console.log(this.platillos)
+    console.log(this.platillos);
   }
 
-  agregarPlatilloComanda(platillo : Platillo){
-    console.log(platillo)
+  agregarPlatilloComanda(platillo: Platillo) {
+    console.log(platillo);
     this.platillosComandas.push(platillo);
   }
 
-  incremetarPlatillo(i : any){
-    // this.cantidadDePlatillos++
-    this.platillosComandas[i].cantidad++
+  incremetarPlatillo(i: any) {
+    this.platillosComandas[i].cantidad++;
   }
 
-  decrementarPlatillo(i : any){
-    // this.cantidadDePlatillos--
-    this.platillosComandas[i].cantidad--
+  decrementarPlatillo(i: any) {
+    this.platillosComandas[i].cantidad--;
   }
 
-  eliminarPlatilloComanda(i : any){
+  eliminarPlatilloComanda(i: any) {
     this.platillosComandas.splice(i, 1);
   }
 
-  
+  async agregarComanda() {
+    this.comandaForm.value.mesa = this.numeroMesa;
+    let idComanda: any;
+    console.log('entro al metodo');
+    console.log(this.comandaForm.value);
+
+    console.log(this.platillosComandas);
+
+    await this.mesasService
+      .agregarComanda(this.comandaForm.value, false, 0)
+      .then((resultado) => {
+        console.log('esto es en el component');
+        console.log(resultado?.id);
+        idComanda = resultado?.id;
+        this.messages = [
+          {
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Message Content',
+          },
+        ];
+        this.limpiarMensajes();
+      })
+      .catch((error) => {
+        console.error('Error al obtener datos:', error);
+        this.messages = [
+          {
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Closable Message Content',
+          },
+        ];
+        this.limpiarMensajes();
+      });
+
+      console.log('este es el id de la mesa actuliazar' , this.idMesaActual);
+      
+
+      await this.mesasService
+      .guardarIdComandaEnMesa(idComanda, this.idMesaActual, this.mesaModalActual, this.comandaForm.value.estatus, this.mesaModalActual.idComandaActual.trim() == "" ? true : false)
+      .then((resultado) => {
+        this.messages = [
+          {
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Message Content',
+          },
+        ];
+        this.limpiarMensajes();
+      })
+      .catch((error) => {
+        this.messages = [
+          {
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Closable Message Content',
+          },
+        ];
+        this.limpiarMensajes();
+      });
+
+
+
+
+    //seccion guardado platillos
+    this.platillosComandas.forEach((platillo) => {
+      this.mesasService
+        .agregarPlatillosComanda(
+          platillo,
+          false,
+          0,
+          idComanda,
+          this.comandaForm.value.estatus
+        )
+        .then((resultado) => {
+          this.messages = [
+            {
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Message Content',
+            },
+          ];
+          this.limpiarMensajes();
+        })
+        .catch((error) => {
+          console.error('Error al obtener datos:', error);
+          this.messages = [
+            {
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Closable Message Content',
+            },
+          ];
+          this.limpiarMensajes();
+        });
+    });
+
+    //hacer un await para que primero se grabde la comanda y luego grabar los platillos asociando el id de la comanda, se tendra que hacer una tabla de platillos para la comanda
+  }
+
+  limpiarMensajes() {
+    setTimeout(() => {
+      this.messages = [];
+    }, 300);
+  }
 }

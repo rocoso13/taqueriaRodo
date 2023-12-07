@@ -2,8 +2,8 @@
   <div class="card-body">
     <h3 class="text-center">Apartado de Mesas</h3>
     <div class="row mt-5">
-      <div class="col-3 mb-5" *ngFor="let mesa of mesas">
-        <button class="mesa-btn" (click)="showModal(mesa)">
+      <div class="col-3 mb-5" *ngFor="let mesa of mesas; let i = index">
+        <button class="mesa-btn" (click)="showModal(mesa, i)">
           <i class="fas fa-table icono-mesa"></i> Mesa : {{ mesa.numeroMesa }}
         </button>
       </div>
@@ -29,6 +29,7 @@
                 <label for="precio">Nombre:</label>
                 <input type="number" class="form-control" id="precio" formControlName="precio" required>
               </div> -->
+
     <table class="table mt-4">
       <thead>
         <tr>
@@ -38,15 +39,16 @@
           <th scope="col">Eliminar</th>
         </tr>
       </thead>
-      <tbody *ngFor="let platilloComanda of platillosComandas; let i = index">
+      <tbody *ngFor="let platilloComanda of platillosComandas; let i = index" >
         <tr>
-          <td>{{ platilloComanda.nombre }}</td>
-          <td>{{ platilloComanda.precio }}</td>
-          <td><button class="btn btn-danger fa-solid fa-minus" (click)="decrementarPlatillo(i)"></button>{{platilloComanda.cantidad}}<button class="btn btn-success fa-solid fa-plus" (click)="incremetarPlatillo(i)"></button></td>
+          <td >{{ platilloComanda.nombre }}</td>
+          <td >{{ platilloComanda.precio }}</td>
+          <td ><button class="btn btn-danger fa-solid fa-minus" (click)="decrementarPlatillo(i)"></button>{{platilloComanda.cantidad}}<button class="btn btn-success fa-solid fa-plus" (click)="incremetarPlatillo(i)"></button></td>
           <td><button class="btn btn-danger fa-solid fa-trash" (click)="eliminarPlatilloComanda(i)"></button></td>
         </tr>
       </tbody>
     </table>
+
     <input
       type="button"
       value="Platillos"
@@ -54,15 +56,16 @@
       (click)="showModalPlatillos()"
     />
     <label for="descripcion">Descripcion</label>
-    <textarea class="form-control"></textarea>
+    <textarea formControlName="descripcion" class="form-control"></textarea>
     
     <label for="acciones">Selecciona una acción:</label>
-    <select class="form-control mb-5" id="acciones" name="acciones">
+    <select formControlName="estatus" class="form-control mb-5" id="acciones" name="acciones">
       <option value="enviar">Enviar</option>
       <option value="completar">Completar</option>
       <option value="cancelar">Cancelar</option>
     </select>
-    <input type="button" class="form-control btn btn-success" value="Enviar Comanda" (click)="enviarComanda()" />
+   <button  type="button" class="form-control btn btn-success" (click)="agregarComanda()">Enviar Comanda</button>
+
   </form>
 </p-dialog>
 
