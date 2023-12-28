@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import {
   collection,
   doc,
@@ -22,6 +22,9 @@ interface Product {
   quantity: number;
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 @Component({
   selector: 'app-mesas',
   templateUrl: './mesas.component.html',

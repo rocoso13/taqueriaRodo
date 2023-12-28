@@ -1,5 +1,5 @@
 // mesas.component.ts
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Message } from 'primeng/api';
@@ -26,6 +26,9 @@ interface PageEvent {
   pageCount: number;
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 @Component({
   selector: 'app-platillos',
   templateUrl: './platillos.component.html',
