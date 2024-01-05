@@ -21,6 +21,7 @@ import { MessagesModule } from 'primeng/messages';
 import { AgregarMesasComponent } from './agregar-mesas/agregar-mesas.component';
 import { PlatillosComponent } from './platillos/platillos.component';
 import { MesasComponent } from './mesas/mesas.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { MesasComponent } from './mesas/mesas.component';
     ButtonModule,
     AnimateModule,
     BrowserAnimationsModule,
-    MessagesModule
+    MessagesModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

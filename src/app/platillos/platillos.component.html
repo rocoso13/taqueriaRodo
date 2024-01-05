@@ -1,4 +1,4 @@
-<p-button (click)="showDialog(null)" icon="pi pi-external-link" label="Show"></p-button>
+<p-button (click)="showDialog(null)" icon="pi pi-external-link" label="Agregar Platillo"></p-button>
 <p-dialog header="Header" [(visible)]="visible" [maximizable]="true" >
   <form [formGroup]="platilloForm" (ngSubmit)="agregarPlatillo()">
     <div class="form-group">
@@ -31,19 +31,26 @@
 <div class="container mt-4">
     <!-- ... Resto del contenido ... -->
     <div class="row mt-3">
-      <div class="col">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Descripcion</th>
-              <th>Precio</th>
-              <th>Carreta</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let platillo of platillos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage); let i = index">
+      <p-table
+    [value]="platillos"
+    [paginator]="true"
+    [rows]="5"
+    [showCurrentPageReport]="true"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} platillos"
+    [rowsPerPageOptions]="[5, 10, 20]"
+>
+    <ng-template pTemplate="header">
+        <tr>
+          <th>Nombre</th>
+          <th>Descripcion</th>
+          <th>Precio</th>
+          <th>Carreta</th>
+          <th>Acciones</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-platillo let-i="rowIndex">
+        <tr>
               <td>{{ platillo.nombre }}</td>
               <td>{{ platillo.descripcion }}</td>
               <td>{{ platillo.precio }}</td>
@@ -57,9 +64,7 @@
                 </button>
               </td>
             </tr>
-          </tbody>
-        </table>
-        <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="120" [rowsPerPageOptions]="[10, 20, 30]"></p-paginator>
-      </div>
+    </ng-template>
+</p-table>
     </div>
   </div>

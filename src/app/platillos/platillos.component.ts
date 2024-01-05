@@ -18,6 +18,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../DB Fire Base/conexion-FireBase';
 import { PlatillosService } from './platillos.service/platillos.service';
+import { Platillo } from './models/Platillo';
 
 interface PageEvent {
   first: number;
@@ -40,24 +41,15 @@ export class PlatillosComponent {
   public esEdicion : boolean = false;
   ids: string[] = [];
   public mesaEditar : [] = []
-  public idPlatilloEditar : any;
+  public idPlatilloEditar: any;
+  public platillo: Platillo = new Platillo();
 
   platilloForm!: FormGroup;
-
-  first: number = 0;
-
-  rows: number = 10;
-
-  // Propiedades para la paginación
-  totalItems: number = 0;
-  itemsPerPage: number = 10; // ajusta según tus necesidades
-  currentPage: number = 1;
 
   constructor(private platillosService: PlatillosService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.obtenerPlatillos();
-    this.totalItems = this.platillos.length;
 
     this.platilloForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -69,29 +61,39 @@ export class PlatillosComponent {
   }
 
   async obtenerPlatillos() {
-    const q = query(collection(db, 'platillos'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log(snapshot.docs);
-      this.platillos = [];
-      this.ids = [];
-      snapshot.docs.forEach((platillo) => {
-        this.platillos.push(platillo.data());
-        this.ids.push(platillo.id);
-      });
-    });
+    this.platillosService.obtenerPlatillos().then(
+      (resp : any) => {
+        this.platillos = resp.data;
+        this.limpiarMensajes()
+        },
+        (error) => {
+          this.messages = [
+            {
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudieron obtener los platillos',
+            },
+          ];
+          this.limpiarMensajes()
+        }
+    );
   }
 
   agregarPlatillo() {
-    console.log("entro a mesassiuu")
-    console.log(this.platilloForm.value.numero);
-    console.log(this.platilloForm.value);
-      console.log(this.esEdicion);
-      this.platillosService.agregarPlatillo(this.platilloForm.value, this.esEdicion, this.idPlatilloEditar).then((resultado) => {
+    this.platillo = new Platillo();
+    this.platillo.nombre = this.platilloForm.value.nombre;
+    this.platillo.descripcion = this.platilloForm.value.descripcion;
+    this.platillo.precio = this.platilloForm.value.precio;
+    this.platillo.carreta = this.platilloForm.value.carreta;
+    console.log(this.platillo);
+    //se podria hacer asi pero ocupo instalarlo , por si algun dia lo quieres usar futuro kevin : npm install class-transformer class-validator
+    //const platilloFromForm = plainToClass(Platillo, this.platilloForm.value);
+      this.platillosService.agregarPlatillo(this.platillo).then((resultado) => {
         this.messages = [
           {
             severity: 'success',
             summary: 'Success',
-            detail: 'Message Content',
+            detail: 'Se agrego el platillo con exito',
           },
         ];
         this.limpiarMensajes()
@@ -102,7 +104,7 @@ export class PlatillosComponent {
           {
             severity: 'error',
             summary: 'Error',
-            detail: 'Closable Message Content',
+            detail: 'No se pudo agregar el platillo',
           },
         ];
         this.limpiarMensajes()
@@ -111,9 +113,6 @@ export class PlatillosComponent {
       this.idPlatilloEditar = ''
       this.idPlatilloEditar = false
 
-      // Actualizar la paginación después de agregar un nuevo PLATILLO
-      this.totalItems = this.platillos.length;
-      this.currentPage = Math.ceil(this.totalItems / this.itemsPerPage);
     
   }
 
@@ -157,18 +156,13 @@ export class PlatillosComponent {
           },
         ];
       });
-    this.totalItems = this.platillos.length;
-
-    this.currentPage = Math.ceil(this.totalItems / this.itemsPerPage);
-  }
-
-  onPageChange(event: any): void {
-    this.currentPage = event.page + 1;
   }
 
   visible: boolean = false;
 
   showDialog(i : any) {
+    console.log("esto es una numero : ",i);
+    
     i == null ? this.esEdicion = false : this.esEdicion = true;
     this.ids[i];
     this.platillos[i];
@@ -188,7 +182,7 @@ export class PlatillosComponent {
   limpiarMensajes() {
     setTimeout(() => {
       this.messages = []
-    }, 300);
+    }, 3000);
   }
 
 }
