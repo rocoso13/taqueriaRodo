@@ -29,10 +29,10 @@ export class PlatillosService {
   
   constructor(private http: HttpClient) { }
 
-  async eliminarPlatillo(collection: string, idDoc: string) {
-    await deleteDoc(doc(db, collection, idDoc));
+  // async eliminarPlatillo(collection: string, idDoc: string) {
+  //   await deleteDoc(doc(db, collection, idDoc));
     
-  }
+  // }
 
   // async agregarPlatillo(platillo: any, esEdicion : boolean, id : any){
   //   console.log(platillo);
@@ -75,6 +75,10 @@ export class PlatillosService {
     return this.http.get(`${this.apiRoot}/obtenerPlatillos`).toPromise();
   }
   async agregarPlatillo(platillo: Platillo) {
-    return this.http.post(`${this.apiRoot}/combos`, platillo).toPromise();
+    return this.http.post(`${this.apiRoot}/agregarPlatillos`, platillo).toPromise();
+  }
+
+  eliminarPlatillo(keyx : number) {
+    return this.http.post(`${this.apiRoot}/eliminarPlatillo`, keyx).toPromise();
   }
 }

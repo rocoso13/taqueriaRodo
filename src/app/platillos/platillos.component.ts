@@ -19,6 +19,8 @@ import {
 import { db } from '../DB Fire Base/conexion-FireBase';
 import { PlatillosService } from './platillos.service/platillos.service';
 import { Platillo } from './models/Platillo';
+import { from, interval, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 
 interface PageEvent {
   first: number;
@@ -38,15 +40,16 @@ interface PageEvent {
 export class PlatillosComponent {
   platillos: any[] = [];
   messages: Message[] = [];
-  public esEdicion : boolean = false;
+  public esEdicion: boolean = false;
   ids: string[] = [];
-  public mesaEditar : [] = []
+  public mesaEditar: [] = []
   public idPlatilloEditar: any;
   public platillo: Platillo = new Platillo();
+  public visible: boolean = false;
 
   platilloForm!: FormGroup;
 
-  constructor(private platillosService: PlatillosService, private fb: FormBuilder) {}
+  constructor(private platillosService: PlatillosService, private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.obtenerPlatillos();
@@ -61,21 +64,59 @@ export class PlatillosComponent {
   }
 
   async obtenerPlatillos() {
+    // const intervalTime = 5000;
+
+    // // Realiza la petición a la API cada 5 segundos
+    // interval(intervalTime).pipe(
+    //   switchMap(() => 
+    //     from(this.platillosService.obtenerPlatillos()).pipe(
+    //       catchError(error => {
+    //         console.error('Error al obtener platillos:', error);
+    //         // Puedes devolver un observable de éxito o simplemente ignorar el error
+    //         return of(null); // Ignorar el error y continuar con el intervalo
+    //       })
+    //     )
+    //   )
+    // ).subscribe(
+    //   (resp: any) => {
+    //     if (resp) {
+    //       console.log("hola");
+    //       this.platillos = resp.data;
+    //       this.limpiarMensajes();
+    //     }
+    //   },
+    //   (error) => {
+    //     console.error('Error en la suscripción al intervalo:', error);
+    //     this.messages = [
+    //       {
+    //         severity: 'error',
+    //         summary: 'Error',
+    //         detail: 'No se pudieron obtener los platillos',
+    //       },
+    //     ];
+    //     this.limpiarMensajes();
+    //   }
+    // );
+
+
+
+
+
     this.platillosService.obtenerPlatillos().then(
-      (resp : any) => {
+      (resp: any) => {
         this.platillos = resp.data;
         this.limpiarMensajes()
-        },
-        (error) => {
-          this.messages = [
-            {
-              severity: 'error',
-              summary: 'Error',
-              detail: 'No se pudieron obtener los platillos',
-            },
-          ];
-          this.limpiarMensajes()
-        }
+      },
+      (error) => {
+        this.messages = [
+          {
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron obtener los platillos',
+          },
+        ];
+        this.limpiarMensajes()
+      }
     );
   }
 
@@ -85,19 +126,22 @@ export class PlatillosComponent {
     this.platillo.descripcion = this.platilloForm.value.descripcion;
     this.platillo.precio = this.platilloForm.value.precio;
     this.platillo.carreta = this.platilloForm.value.carreta;
-    console.log(this.platillo);
+    this.platillo.keyx = this.platilloForm.value.keyx
+    console.log("esto se ira al backend", this.platillo);
     //se podria hacer asi pero ocupo instalarlo , por si algun dia lo quieres usar futuro kevin : npm install class-transformer class-validator
     //const platilloFromForm = plainToClass(Platillo, this.platilloForm.value);
-      this.platillosService.agregarPlatillo(this.platillo).then((resultado) => {
-        this.messages = [
-          {
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Se agrego el platillo con exito',
-          },
-        ];
-        this.limpiarMensajes()
-      })
+    this.platillosService.agregarPlatillo(this.platillo).then((resultado: any) => {
+      this.platillos = resultado.data;
+      this.limpiarMensajes()
+      this.messages = [
+        {
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Se agrego el platillo con exito',
+        },
+      ];
+      this.limpiarMensajes()
+    })
       .catch((error) => {
         console.error('Error al obtener datos:', error);
         this.messages = [
@@ -109,35 +153,44 @@ export class PlatillosComponent {
         ];
         this.limpiarMensajes()
       });
-      this.platilloForm.reset();
-      this.idPlatilloEditar = ''
-      this.idPlatilloEditar = false
+    this.platilloForm.reset();
+    this.idPlatilloEditar = ''
+    this.idPlatilloEditar = false
 
-    
+    this.visible = false;
   }
 
-  editarPlatillo(platillo: any, id: any) {
+  editarPlatillo(platillo: any) {
+    this.platilloForm.reset();
+    // this.platilloForm = this.fb.group({nombre: [""],
+    //   precio: [""],
+    //   descripcion: [""],
+    //   carreta: [""],
+    //   keyx: [""]})
     this.platilloForm = this.fb.group({
       nombre: [platillo.nombre, Validators.required],
       precio: [platillo.precio, Validators.required],
       descripcion: [platillo.descripcion, Validators.required],
-      carreta: [platillo.carreta, Validators.required]
+      carreta: [platillo.carreta, Validators.required],
+      keyx: [platillo.keyx]
     });
-    this.idPlatilloEditar = id;
+
+    console.log(platillo);
+
 
     this.platilloForm.value
 
-    console.log('esta mesa se va a editar',platillo);   
-    
+    console.log('esta mesa se va a editar', platillo);
+
   }
 
-  eliminarPlatillo(index: number): void {
-    console.log(index);
-    console.log(this.ids[index]);
-    // Actualizar la paginación después de eliminar una mesa
+  eliminarPlatillo(keyx: number): void {
+    console.log(keyx);
+    // Actualizar la paginación después de eliminar un platillo
     this.platillosService
-      .eliminarPlatillo('platillos', this.ids[index])
-      .then((resultado) => {
+      .eliminarPlatillo(keyx)
+      .then((resultado: any) => {
+        this.platillos = resultado.data;
         this.messages = [
           {
             severity: 'success',
@@ -145,6 +198,7 @@ export class PlatillosComponent {
             detail: 'Se elimino la mesa correctamente',
           },
         ];
+        this.limpiarMensajes()
       })
       .catch((error) => {
         console.error('Error al obtener datos:', error);
@@ -155,21 +209,25 @@ export class PlatillosComponent {
             detail: 'Closable Message Content',
           },
         ];
+        this.limpiarMensajes();
       });
+    this.visible = false;
   }
 
-  visible: boolean = false;
 
-  showDialog(i : any) {
-    console.log("esto es una numero : ",i);
-    
-    i == null ? this.esEdicion = false : this.esEdicion = true;
-    this.ids[i];
-    this.platillos[i];
-    if (this.platillos[i] != undefined) {
-      this.editarPlatillo(this.platillos[i], this.ids[i]);
+
+  showDialog(i: any) {
+
+    this.platilloForm.reset();
+    console.log("esto es una numero : ", i);
+    if (i != null) {
+      this.ids[i];
+      this.platillos[i];
+      this.editarPlatillo(this.platillos[i]);
     }
-    
+
+
+
 
 
     this.visible = true;

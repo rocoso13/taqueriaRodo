@@ -4,4 +4,5 @@ export class Platillo {
     descripcion : string ='';
     carreta : number = 0;
     cantidad : number = 1;
+    keyx : number = 0;
 }
