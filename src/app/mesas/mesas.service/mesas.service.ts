@@ -18,6 +18,8 @@ import {
 import { db } from 'src/app/DB Fire Base/conexion-FireBase';
 import { Platillo } from 'src/app/platillos/models/Platillo';
 
+import { HttpClient } from '@angular/common/http';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -28,6 +30,9 @@ export class MesasService {
   //     await deleteDoc(doc(db, collection, idDoc));
 
   //   }
+  apiRoot: string = "http://localhost:8080/agregarMesas";
+
+  constructor(private http: HttpClient){}
 
   async obtenerPlatillos() {
     this.platillos = [];
@@ -175,5 +180,9 @@ export class MesasService {
 
 
      
+  }
+
+  obtenerMesas() {
+    return this.http.get(`${this.apiRoot}/obtenerAgregarMesas`).toPromise();
   }
 }

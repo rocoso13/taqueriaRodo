@@ -102,8 +102,6 @@ export class MesasComponent {
           estatus: [respuesta[1], Validators.required]
         });
       })
-
-      
     }
 
     this.numeroMesa = mesa.numeroMesa;
@@ -113,16 +111,33 @@ export class MesasComponent {
 
   //esta funcion obtiene las mesas en tiempo real
   async obtenerMesas() {
-    const q = query(collection(db, 'mesas'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log(snapshot.docs);
-      this.mesas = [];
-      this.ids = [];
-      snapshot.docs.forEach((mesa) => {
-        this.mesas.push(mesa.data());
-        this.ids.push(mesa.id);
-      });
-    });
+    // const q = query(collection(db, 'mesas'));
+    // const unsubscribe = onSnapshot(q, (snapshot) => {
+    //   console.log(snapshot.docs);
+    //   this.mesas = [];
+    //   this.ids = [];
+    //   snapshot.docs.forEach((mesa) => {
+    //     this.mesas.push(mesa.data());
+    //     this.ids.push(mesa.id);
+    //   });
+    // });
+
+    this.mesasService.obtenerMesas().then(
+      (resp: any) => {
+        this.mesas = resp.data;
+        this.limpiarMensajes()
+      },
+      (error) => {
+        this.messages = [
+          {
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron obtener los platillos',
+          },
+        ];
+        this.limpiarMensajes()
+      }
+    );
   }
 
   async showModalPlatillos() {
