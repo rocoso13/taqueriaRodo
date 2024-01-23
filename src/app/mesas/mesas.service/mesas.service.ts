@@ -19,6 +19,7 @@ import { db } from 'src/app/DB Fire Base/conexion-FireBase';
 import { Platillo } from 'src/app/platillos/models/Platillo';
 
 import { HttpClient } from '@angular/common/http';
+import { PlatillosService } from 'src/app/platillos/platillos.service/platillos.service';
 
 @Injectable({
   providedIn: 'root',
@@ -32,21 +33,18 @@ export class MesasService {
   //   }
   apiRoot: string = "http://localhost:8080/agregarMesas";
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient, private platillosService: PlatillosService){}
 
   async obtenerPlatillos() {
     this.platillos = [];
-    const querySnapshot = await getDocs(collection(db, 'platillos'));
-    querySnapshot.forEach((doc) => {
-      let modelPlatillo = new Platillo();
-      // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, ' => ', doc.data());
-      modelPlatillo.descripcion = doc.data()['descripcion'];
-      modelPlatillo.nombre = doc.data()['nombre'];
-      modelPlatillo.precio = doc.data()['precio'];
-      modelPlatillo.carreta = doc.data()['carreta'];
-      this.platillos.push(modelPlatillo);
-    });
+    await this.platillosService.obtenerPlatillos().then(
+      (resp: any) => {
+        this.platillos = resp.data;
+      },
+      (error) => {
+        
+      }
+    );
     return this.platillos;
   }
 

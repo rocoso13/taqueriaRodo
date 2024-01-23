@@ -148,11 +148,12 @@ export class MesasComponent {
   }
 
   agregarPlatilloComanda(platillo: Platillo) {
-    console.log(platillo);
+    platillo.cantidad = 1;
     this.platillosComandas.push(platillo);
   }
 
   incremetarPlatillo(i: any) {
+    
     this.platillosComandas[i].cantidad++;
   }
 
