@@ -143,8 +143,6 @@ export class MesasComponent {
   async showModalPlatillos() {
     this.displayModalComanda = true;
     this.platillos = await this.mesasService.obtenerPlatillos();
-    console.log('platillos siuu');
-    console.log(this.platillos);
   }
 
   agregarPlatilloComanda(platillo: Platillo) {
@@ -173,94 +171,94 @@ export class MesasComponent {
 
     console.log(this.platillosComandas);
 
-    await this.mesasService
-      .agregarComanda(this.comandaForm.value, false, 0)
-      .then((resultado) => {
-        console.log('esto es en el component');
-        console.log(resultado?.id);
-        idComanda = resultado?.id;
-        this.messages = [
-          {
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Message Content',
-          },
-        ];
-        this.limpiarMensajes();
-      })
-      .catch((error) => {
-        console.error('Error al obtener datos:', error);
-        this.messages = [
-          {
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Closable Message Content',
-          },
-        ];
-        this.limpiarMensajes();
-      });
+    // await this.mesasService
+    //   .agregarComanda(this.comandaForm.value, false, 0)
+    //   .then((resultado) => {
+    //     console.log('esto es en el component');
+    //     console.log(resultado?.id);
+    //     idComanda = resultado?.id;
+    //     this.messages = [
+    //       {
+    //         severity: 'success',
+    //         summary: 'Success',
+    //         detail: 'Message Content',
+    //       },
+    //     ];
+    //     this.limpiarMensajes();
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error al obtener datos:', error);
+    //     this.messages = [
+    //       {
+    //         severity: 'error',
+    //         summary: 'Error',
+    //         detail: 'Closable Message Content',
+    //       },
+    //     ];
+    //     this.limpiarMensajes();
+    //   });
 
       console.log('este es el id de la mesa actuliazar' , this.idMesaActual);
       
 
-      await this.mesasService
-      .guardarIdComandaEnMesa(idComanda, this.idMesaActual, this.mesaModalActual, this.comandaForm.value.estatus, this.mesaModalActual.idComandaActual.trim() == "" ? true : false)
-      .then((resultado) => {
-        this.messages = [
-          {
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Message Content',
-          },
-        ];
-        this.limpiarMensajes();
-      })
-      .catch((error) => {
-        this.messages = [
-          {
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Closable Message Content',
-          },
-        ];
-        this.limpiarMensajes();
-      });
+      // await this.mesasService
+      // .guardarIdComandaEnMesa(idComanda, this.idMesaActual, this.mesaModalActual, this.comandaForm.value.estatus, this.mesaModalActual.idComandaActual.trim() == "" ? true : false)
+      // .then((resultado) => {
+      //   this.messages = [
+      //     {
+      //       severity: 'success',
+      //       summary: 'Success',
+      //       detail: 'Message Content',
+      //     },
+      //   ];
+      //   this.limpiarMensajes();
+      // })
+      // .catch((error) => {
+      //   this.messages = [
+      //     {
+      //       severity: 'error',
+      //       summary: 'Error',
+      //       detail: 'Closable Message Content',
+      //     },
+      //   ];
+      //   this.limpiarMensajes();
+      // });
 
 
 
 
-    //seccion guardado platillos
-    this.platillosComandas.forEach((platillo) => {
-      this.mesasService
-        .agregarPlatillosComanda(
-          platillo,
-          false,
-          0,
-          idComanda,
-          this.comandaForm.value.estatus
-        )
-        .then((resultado) => {
-          this.messages = [
-            {
-              severity: 'success',
-              summary: 'Success',
-              detail: 'Message Content',
-            },
-          ];
-          this.limpiarMensajes();
-        })
-        .catch((error) => {
-          console.error('Error al obtener datos:', error);
-          this.messages = [
-            {
-              severity: 'error',
-              summary: 'Error',
-              detail: 'Closable Message Content',
-            },
-          ];
-          this.limpiarMensajes();
-        });
-    });
+    // //seccion guardado platillos
+    // this.platillosComandas.forEach((platillo) => {
+    //   this.mesasService
+    //     .agregarPlatillosComanda(
+    //       platillo,
+    //       false,
+    //       0,
+    //       idComanda,
+    //       this.comandaForm.value.estatus
+    //     )
+    //     .then((resultado) => {
+    //       this.messages = [
+    //         {
+    //           severity: 'success',
+    //           summary: 'Success',
+    //           detail: 'Message Content',
+    //         },
+    //       ];
+    //       this.limpiarMensajes();
+    //     })
+    //     .catch((error) => {
+    //       console.error('Error al obtener datos:', error);
+    //       this.messages = [
+    //         {
+    //           severity: 'error',
+    //           summary: 'Error',
+    //           detail: 'Closable Message Content',
+    //         },
+    //       ];
+    //       this.limpiarMensajes();
+    //     });
+    // });
 
     //hacer un await para que primero se grabde la comanda y luego grabar los platillos asociando el id de la comanda, se tendra que hacer una tabla de platillos para la comanda
   }
