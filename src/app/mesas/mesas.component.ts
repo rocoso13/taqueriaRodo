@@ -16,6 +16,8 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MesasService } from './mesas.service/mesas.service';
 import { Platillo } from '../platillos/models/Platillo';
 import { Message } from 'primeng/api';
+import { PedidoDTO } from './models/PedidoDTO';
+import { ComandaDTO } from '../models/ComandaDTO';
 
 interface Product {
   name: string;
@@ -41,6 +43,7 @@ export class MesasComponent {
   public cantidadDePlatillos: number = 1;
   public idMesaActual : any;
   public mesaModalActual : any;
+  public pedidoDTO: PedidoDTO = new PedidoDTO();
   first: number = 0;
 
   rows: number = 10;
@@ -73,6 +76,7 @@ export class MesasComponent {
       descripcion: ['', Validators.required],
       estatus: ['', Validators.required],
       mesa: ['', Validators.required],
+      keyx: ['']
     });
   }
 
@@ -81,7 +85,7 @@ export class MesasComponent {
     this.comandaForm.reset();
     this.mesaModalActual = mesa;
     this.platillosComandas = [];
-    let comandaActual : Promise<any[]>;
+    let comandaActual : any;
     console.log('se volvio a ejecutar este metodo');
     console.log(mesa)
     
@@ -94,15 +98,66 @@ export class MesasComponent {
         this.platillosComandas = respuesta;
       }) : [];
 
-      comandaActual = this.mesasService.obtenerComanda(mesa.idComandaActual)
+      // comandaActual = this.mesasService.obtenerComanda(mesa.idComandaActual).then((respuesta: any){
 
-      comandaActual.then((respuesta) => {
-        this.comandaForm = this.fb.group({
-          descripcion: [respuesta[0], Validators.required],
-          estatus: [respuesta[1], Validators.required]
-        });
-      })
+      // })
+      
+
+      // comandaActual.then((respuesta) => {
+      //   this.comandaForm = this.fb.group({
+      //     descripcion: [respuesta[0], Validators.required],
+      //     estatus: [respuesta[1], Validators.required]
+      //   });
+      // })
     }
+
+    this.mesasService.obtenerComanda(mesa).then(
+      (resp: any) => {
+        console.log(resp.data.comanda);
+
+      //   {
+      //     "keyx": 4,
+      //     "numeroMesa": 1,
+      //     "estatus": "enviar",
+      //     "descripcion": "sin cebolla",
+      //     "fechaCreacion": [
+      //         2024,
+      //         1,
+      //         23,
+      //         12,
+      //         34,
+      //         11
+      //     ],
+      //     "fechaCierre": [
+      //         2024,
+      //         1,
+      //         23,
+      //         1,
+      //         34,
+      //         11
+      //     ]
+      // }
+
+        this.comandaForm = this.fb.group({
+              descripcion: [resp.data.comanda?.descripcion, Validators.required],
+              estatus: [resp.data.comanda?.estatus, Validators.required],
+              keyx: [resp.data.comanda?.keyx, Validators.required]
+            });
+        comandaActual = resp.data.comanda;
+        this.platillosComandas = resp.data.platillos;
+        this.limpiarMensajes()
+      },
+      (error) => {
+        this.messages = [
+          {
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron obtener los platillos',
+          },
+        ];
+        this.limpiarMensajes()
+      }
+    );
 
     this.numeroMesa = mesa.numeroMesa;
     this.idMesaActual = this.ids[idMesa];
@@ -164,12 +219,73 @@ export class MesasComponent {
   }
 
   async agregarComanda() {
+    this.pedidoDTO = new PedidoDTO();
+    let comandaDTO = new ComandaDTO();
+    let platillosComanda = new Platillo();
+
+//     [
+//       {
+//           "keyx": 3,
+//           "carreta": 3,
+//           "descripcion": "Descripción torta",
+//           "nombre": "torta prueba de edicion",
+//           "precio": 15.75,
+//           "cantidad": 1
+//       }
+//     ]
+
+//   {
+//     "descripcion": "sin cebolla",
+//     "estatus": "enviar",
+//     "keyx": 4,
+//     "mesa": 20
+// }
+    //seteo de valores 
+    this.platillosComandas.forEach(platilloComanda =>{
+      platillosComanda = new Platillo();
+      platillosComanda.keyx = platilloComanda.keyx;
+      platillosComanda.carreta = platilloComanda.carreta;
+      platillosComanda.descripcion = platilloComanda.descripcion;
+      platillosComanda.nombre = platilloComanda.nombre;
+      platillosComanda.precio = platilloComanda.precio;
+      platilloComanda.cantidad = platilloComanda.cantidad;
+      this.pedidoDTO.platillosComanda.push(platilloComanda);
+    })
+    this.pedidoDTO.comandaDTO.descripcion = this.comandaForm.value.descripcion;
+    this.pedidoDTO.comandaDTO.estatus = this.comandaForm.value.estatus;
+    this.pedidoDTO.comandaDTO.keyx = this.comandaForm.value.keyx;
+    this.pedidoDTO.comandaDTO.numeroMesa = this.comandaForm.value.mesa;
+
+    // this.pedidoDTO.ComandaDTO = this.comandaForm.value;
+    // this.pedidoDTO.PlatilloDTO = this.platillosComandas;
     this.comandaForm.value.mesa = this.numeroMesa;
     let idComanda: any;
     console.log('entro al metodo');
     console.log(this.comandaForm.value);
 
     console.log(this.platillosComandas);
+
+    console.log("nuevos datos",this.pedidoDTO);
+    
+
+    this.mesasService.agregarComanda(this.pedidoDTO).then(
+      (resp: any) => {
+        console.log(resp);
+        
+        // this.mesas = resp.data;
+        this.limpiarMensajes()
+      },
+      (error) => {
+        this.messages = [
+          {
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron obtener los platillos',
+          },
+        ];
+        this.limpiarMensajes()
+      }
+    );
 
     // await this.mesasService
     //   .agregarComanda(this.comandaForm.value, false, 0)

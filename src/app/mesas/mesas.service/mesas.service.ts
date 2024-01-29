@@ -20,6 +20,7 @@ import { Platillo } from 'src/app/platillos/models/Platillo';
 
 import { HttpClient } from '@angular/common/http';
 import { PlatillosService } from 'src/app/platillos/platillos.service/platillos.service';
+import { PedidoDTO } from '../models/PedidoDTO';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +33,7 @@ export class MesasService {
 
   //   }
   apiRoot: string = "http://localhost:8080/agregarMesas";
+  apiRootComanda : string = "http://localhost:8080/comandas"
 
   constructor(private http: HttpClient, private platillosService: PlatillosService){}
 
@@ -48,22 +50,22 @@ export class MesasService {
     return this.platillos;
   }
 
-  async obtenerComanda(id : any) {
-    // {
-    //     "descripcion": "prueba",
-    //     "mesa": 16,
-    //     "estatus": "enviar"
-    // }
-    let comandaActual = [];
-    const docRef = doc(db, "comandas", id);
-    const docSnap = await getDoc(docRef);
-    console.log('comanda actual');
-    comandaActual.push(docSnap.data()!['descripcion'])
-    comandaActual.push(docSnap.data()!['estatus'])
-    console.log(docSnap.data());
+  // async obtenerComanda(id : any) {
+  //   // {
+  //   //     "descripcion": "prueba",
+  //   //     "mesa": 16,
+  //   //     "estatus": "enviar"
+  //   // }
+  //   let comandaActual = [];
+  //   const docRef = doc(db, "comandas", id);
+  //   const docSnap = await getDoc(docRef);
+  //   console.log('comanda actual');
+  //   comandaActual.push(docSnap.data()!['descripcion'])
+  //   comandaActual.push(docSnap.data()!['estatus'])
+  //   console.log(docSnap.data());
     
-    return comandaActual;
-  }
+  //   return comandaActual;
+  // }
 
   async obtenerPlatillosComanda(idComanda: any) {
     this.platillosComanda = [];
@@ -92,30 +94,30 @@ export class MesasService {
     }
   }
 
-  async agregarComanda(comanda: any, esEdicion: boolean, id: any) {
-    console.log(comanda);
-    let queTrae;
-    if (esEdicion) {
-      await setDoc(doc(db, 'comandas', id), {
-        descripcion: comanda.descripcion,
-        estatus: comanda.estatus,
-        mesa: comanda.mesa,
-      });
-    } else {
-      try {
-        queTrae = await addDoc(collection(db, 'comandas'), {
-          descripcion: comanda.descripcion,
-          estatus: comanda.estatus,
-          mesa: comanda.mesa,
-        });
-        console.log('Documento agregado con éxito');
-        console.log(queTrae.id);
-      } catch (error) {
-        console.error('Error al agregar el documento: ', error);
-      }
-    }
-    return queTrae;
-  }
+  // async agregarComanda(comanda: any, esEdicion: boolean, id: any) {
+  //   console.log(comanda);
+  //   let queTrae;
+  //   if (esEdicion) {
+  //     await setDoc(doc(db, 'comandas', id), {
+  //       descripcion: comanda.descripcion,
+  //       estatus: comanda.estatus,
+  //       mesa: comanda.mesa,
+  //     });
+  //   } else {
+  //     try {
+  //       queTrae = await addDoc(collection(db, 'comandas'), {
+  //         descripcion: comanda.descripcion,
+  //         estatus: comanda.estatus,
+  //         mesa: comanda.mesa,
+  //       });
+  //       console.log('Documento agregado con éxito');
+  //       console.log(queTrae.id);
+  //     } catch (error) {
+  //       console.error('Error al agregar el documento: ', error);
+  //     }
+  //   }
+  //   return queTrae;
+  // }
 
   async agregarPlatillosComanda(
     platillos: any,
@@ -182,5 +184,13 @@ export class MesasService {
 
   obtenerMesas() {
     return this.http.get(`${this.apiRoot}/obtenerAgregarMesas`).toPromise();
+  }
+
+  async obtenerComanda(mesa: any) {
+    return this.http.post(`${this.apiRootComanda}/obtenerComanda`, mesa).toPromise();
+  }
+
+  async agregarComanda(pedidoDTO: PedidoDTO) {
+    return this.http.post(`${this.apiRootComanda}/agregarComanda`, pedidoDTO).toPromise();
   }
 }
