@@ -168,6 +168,7 @@ export class MesasComponent {
     this.pedidoDTO.comandaDTO.estatus = this.comandaForm.value.estatus;
     this.pedidoDTO.comandaDTO.keyx = this.keyxMesa;
     this.pedidoDTO.comandaDTO.numeroMesa = this.numeroMesa;
+    this.pedidoDTO.comandaDTO.numeroOrden == undefined ? 0 : this.comandaForm.value.numeroOrden;
 
     this.comandaForm.value.mesa = this.numeroMesa;
     let idComanda: any;
@@ -182,6 +183,13 @@ export class MesasComponent {
     this.mesasService.agregarComanda(this.pedidoDTO).then(
       (resp: any) => {
         console.log(resp);
+        this.messages = [
+          {
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Se agrego la comanda correctamente',
+          },
+        ];
 
         // this.mesas = resp.data;
         this.limpiarMensajes()

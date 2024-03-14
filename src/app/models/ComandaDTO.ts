@@ -5,4 +5,5 @@ export class ComandaDTO {
     public descripcion: string = "";
     public fechaCreacion?: Date;
     public fechaCierre?: Date;
+    public numeroOrden: number = 0;
 }
